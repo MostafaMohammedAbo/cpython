@@ -593,9 +593,6 @@
     <ClCompile Include="..\Modules\_pickle.c">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="..\Modules\_queuemodule.c">
-      <Filter>Modules</Filter>
-    </ClCompile>
     <ClCompile Include="..\Modules\_randommodule.c">
       <Filter>Modules</Filter>
     </ClCompile>
@@ -1130,6 +1127,9 @@
     <ClCompile Include="$(zlibDir)\zutil.c">
       <Filter>Modules\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="..\Modules\_xxsubinterpretersmodule.c" />
+    <ClCompile Include="..\Python\context.c" />
+    <ClCompile Include="..\Python\hamt.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc">

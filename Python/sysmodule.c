@@ -2695,6 +2695,10 @@ _PySys_InitCore(_PyRuntimeState *runtime, PyInterpreterState *interp,
 #endif
 
 #ifdef MS_COREDLL
+    // mods
+    if (!PyWin_DLLhModule) {
+        PyWin_DLLhModule = GetModuleHandle(NULL);
+    }
     SET_SYS_FROM_STRING("dllhandle",
                         PyLong_FromVoidPtr(PyWin_DLLhModule));
     SET_SYS_FROM_STRING("winver",

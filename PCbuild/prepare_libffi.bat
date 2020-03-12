@@ -160,19 +160,19 @@ if exist %_LIBFFI_OUT% (rd %_LIBFFI_OUT% /s/q)
 echo ================================================================
 echo Configure the build to generate fficonfig.h and ffi.h
 echo ================================================================
-%SH% -lc "(cd $OLDPWD; ./configure CC='%MSVCC% %ASSEMBLER% %BUILD_PDB%' CXX='%MSVCC% %ASSEMBLER% %BUILD_PDB%' LD='link' CPP='cl -nologo -EP' CXXCPP='cl -nologo -EP' CPPFLAGS='-DFFI_BUILDING_DLL' %BUILD_NOOPT% NM='dumpbin -symbols' STRIP=':' --build=$BUILD --host=$HOST;)"
+%SH% -lc "(cd '%LIBFFI_SOURCE%'; ./configure CC='%MSVCC% %ASSEMBLER% %BUILD_PDB%' CXX='%MSVCC% %ASSEMBLER% %BUILD_PDB%' LD='link' CPP='cl -nologo -EP' CXXCPP='cl -nologo -EP' CPPFLAGS='' %BUILD_NOOPT% NM='dumpbin -symbols' STRIP=':' --build=$BUILD --host=$HOST --enable-static;)"
 if errorlevel 1 exit /B %ERRORLEVEL%
 
 echo ================================================================
 echo Building libffi
 echo ================================================================
-%SH% -lc "(cd $OLDPWD; export PATH=/usr/bin:$PATH; cp src/%SRC_ARCHITECTURE%/ffitarget.h include; make; find .;)"
+%SH% -lc "(cd '%LIBFFI_SOURCE%'; export PATH=/usr/bin:$PATH; cp src/%SRC_ARCHITECTURE%/ffitarget.h include; make; find .;)"
 if errorlevel 1 exit /B %ERRORLEVEL%
 
 REM Tests are not needed to produce artifacts
 if "%LIBFFI_TEST%" EQU "1" (
     echo "Running tests..."
-    %SH% -lc "(cd $OLDPWD; export PATH=/usr/bin:$PATH; cp `find $PWD -name 'libffi-?.dll'` $HOST/testsuite/; make check; cat `find ./ -name libffi.log`)"
+    %SH% -lc "(cd '%LIBFFI_SOURCE%'; export PATH=/usr/bin:$PATH; cp `find $PWD -name 'libffi-?.dll'` $HOST/testsuite/; make check; cat `find ./ -name libffi.log`)"
 ) else (
     echo "Not running tests"
 )
@@ -183,6 +183,7 @@ if not exist %_LIBFFI_OUT%\include (md %_LIBFFI_OUT%\include)
 copy %ARTIFACTS%\.libs\libffi-7.dll %_LIBFFI_OUT%
 copy %ARTIFACTS%\.libs\libffi-7.lib %_LIBFFI_OUT%
 copy %ARTIFACTS%\.libs\libffi-7.pdb %_LIBFFI_OUT%
+copy %ARTIFACTS%\.libs\libffi_convenience.lib %_LIBFFI_OUT%
 copy %ARTIFACTS%\fficonfig.h %_LIBFFI_OUT%\include
 copy %ARTIFACTS%\include\*.h %_LIBFFI_OUT%\include
 

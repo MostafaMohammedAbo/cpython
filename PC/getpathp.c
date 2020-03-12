@@ -524,6 +524,10 @@ _Py_GetDLLPath(void)
 
 #ifdef Py_ENABLE_SHARED
     extern HANDLE PyWin_DLLhModule;
+    // mods
+    if (!PyWin_DLLhModule) {
+        PyWin_DLLhModule = GetModuleHandle(NULL);
+    }
     if (PyWin_DLLhModule) {
         if (!GetModuleFileNameW(PyWin_DLLhModule, dll_path, MAXPATHLEN)) {
             dll_path[0] = 0;
