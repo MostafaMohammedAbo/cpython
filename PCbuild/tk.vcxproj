@@ -73,7 +73,39 @@ xcopy /Y /I rc "$(OutDir)\rc"
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  
+
+  <Target Name="_PatchXh" BeforeTargets="Build">
+    <PropertyGroup>
+      <Xh>$(tkDir)\xlib\X11\X.h</Xh>
+      <PatchedMark>/* patched, include "windows.h" first to avoid conflict macro */</PatchedMark>
+      <PatchInsertText>
+$(PatchedMark)
+#ifdef _WIN32
+#   define WIN32_LEAN_AND_MEAN
+#   include &lt;windows.h&gt;
+#   undef WIN32_LEAN_AND_MEAN
+#endif</PatchInsertText>
+      <PatchInsertAfter>#define X_H</PatchInsertAfter>
+    </PropertyGroup>
+    <Error Text="Cannot find $(Xh)" Condition="!Exists($(Xh))" />
+    <PropertyGroup>
+      <_Original>$([System.IO.File]::ReadAllText($(Xh)))</_Original>
+      <IsPatched>$(_Original.Contains($(PatchedMark)))</IsPatched>
+      <_PatchAt>$([MSBuild]::Add(
+        $(_Original.IndexOf($(PatchInsertAfter))),
+        $(PatchInsertAfter.Length))
+      )</_PatchAt>
+      <_Patched>$(_Original.Insert($(_PatchAt), $(PatchInsertText)))</_Patched>
+    </PropertyGroup>
+    <Message Text="$(Xh) is already patched" Importance="normal" Condition="$(IsPatched)" />
+    <Message Text="Patching $(Xh)" Importance="high" Condition="!$(IsPatched)" />
+    <WriteLinesToFile File="$(Xh)"
+                      Lines="$(_Patched)"
+                      Overwrite="true"
+                      Encoding="ASCII"
+                      Condition="!$(IsPatched)" />
+  </Target>
+
   <Target Name="Clean" />
   
   <Target Name="ResolveAssemblyReferences" />
