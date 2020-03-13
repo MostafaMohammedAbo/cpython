@@ -123,7 +123,7 @@ struct _inittab _PyImport_Inittab[] = {
 	//{"_ctypes_test", PyInit__ctypes_test},
 	{"_decimal", PyInit__decimal},
 	{"_elementtree", PyInit__elementtree},
-	//{"_hashlib", PyInit__hashlib},
+	{"_hashlib", PyInit__hashlib},
 	{"_lzma", PyInit__lzma},
 	{"_msi", PyInit__msi},
 	{"_multiprocessing", PyInit__multiprocessing},
@@ -138,7 +138,7 @@ struct _inittab _PyImport_Inittab[] = {
 	// {"_testinternalcapi", PyInit__testinternalcapi},
 	// {"_testmultiphase", PyInit__testmultiphase},
 	//{"_tkinter", PyInit__tkinter},
-	//{"_ssl", PyInit__ssl},
+	{"_ssl", PyInit__ssl},
 
     {"_abc", PyInit__abc},
     {"array", PyInit_array},

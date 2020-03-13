@@ -95,8 +95,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <StackReserveSize>2000000</StackReserveSize>
-      <AdditionalDependencies>libffi_convenience.lib;winmm.lib;rpcrt4.lib;cabinet.lib;msi.lib;iphlpapi.lib;shlwapi.lib;version.lib;ws2_32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(libffiOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>crypt32.lib;libcrypto_static.lib;libssl_static.lib;libffi_convenience.lib;winmm.lib;rpcrt4.lib;cabinet.lib;msi.lib;iphlpapi.lib;shlwapi.lib;version.lib;ws2_32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(opensslOutDir);$(libffiOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -140,6 +140,9 @@
     <ProjectReference Include="_elementtree.vcxproj">
       <Project>{17e1e049-c309-4d79-843f-ae483c264aea}</Project>
     </ProjectReference>
+    <ProjectReference Include="_hashlib.vcxproj">
+      <Project>{447f05a8-f581-4cac-a466-5ac7936e207e}</Project>
+    </ProjectReference>
     <ProjectReference Include="_lzma.vcxproj">
       <Project>{f9d71780-f393-11e0-be50-0800200c9a66}</Project>
     </ProjectReference>
@@ -160,6 +163,9 @@
     </ProjectReference>
     <ProjectReference Include="_sqlite3.vcxproj">
       <Project>{13cecb97-4119-4316-9d42-8534019a5a44}</Project>
+    </ProjectReference>
+    <ProjectReference Include="_ssl.vcxproj">
+      <Project>{c6e20f84-3247-4ad6-b051-b073268f73ba}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
