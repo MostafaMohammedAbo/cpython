@@ -137,7 +137,7 @@ struct _inittab _PyImport_Inittab[] = {
 	// {"_testimportmultiple", PyInit__testimportmultiple},
 	// {"_testinternalcapi", PyInit__testinternalcapi},
 	// {"_testmultiphase", PyInit__testmultiphase},
-	//{"_tkinter", PyInit__tkinter},
+	{"_tkinter", PyInit__tkinter},
 	{"_ssl", PyInit__ssl},
 
     {"_abc", PyInit__abc},

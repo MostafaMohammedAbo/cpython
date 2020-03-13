@@ -95,7 +95,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <StackReserveSize>2000000</StackReserveSize>
-      <AdditionalDependencies>crypt32.lib;libcrypto_static.lib;libssl_static.lib;libffi_convenience.lib;winmm.lib;rpcrt4.lib;cabinet.lib;msi.lib;iphlpapi.lib;shlwapi.lib;version.lib;ws2_32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(tcltkLib);netapi32.lib;crypt32.lib;libcrypto_static.lib;libssl_static.lib;libffi_convenience.lib;winmm.lib;rpcrt4.lib;cabinet.lib;msi.lib;iphlpapi.lib;shlwapi.lib;version.lib;ws2_32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(opensslOutDir);$(libffiOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -103,6 +103,9 @@
     <None Include="..\PC\pycon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="$(tcltkDir)rc\tk_base.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">BASE_NO_TK_ICON;$(_DebugPreprocessorDefinition)%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
     <ResourceCompile Include="..\PC\python_exe.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +169,9 @@
     </ProjectReference>
     <ProjectReference Include="_ssl.vcxproj">
       <Project>{c6e20f84-3247-4ad6-b051-b073268f73ba}</Project>
+    </ProjectReference>
+    <ProjectReference Include="_tkinter.vcxproj">
+      <Project>{4946ecac-2e69-4bf8-a90a-f5136f5094df}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
