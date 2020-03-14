@@ -110,7 +110,7 @@
     <ClCompile Include="..\Modules\tkappinit.c" />
     <ClCompile Include="..\Modules\tclzvfs\zvfs.c">
       <AdditionalIncludeDirectories Condition="$(IncludeExternals)">$(zlibDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
