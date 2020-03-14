@@ -10,7 +10,7 @@
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public
 ** License along with this library; if not, write to the
 ** Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -30,7 +30,7 @@
 ** Modified to use Tcl VFS hooks by Peter MacDonald
 **   peter@pdqi.com
 **   http://pdqi.com
-** 
+**
 **   Revison  Date           Author             Description
 **   -------  -------------  -----------------  ----------------------------------------------
 **            Jan  8, 2006   Dennis R. LaBelle  Modified to support encrypted files
@@ -72,7 +72,7 @@ static struct {
   Tcl_HashTable fileHash;     /* One entry for each file in the ZVFS.  The
                               ** The key is the virtual filename.  The data
                               ** an an instance of the ZvfsFile structure. */
-  Tcl_HashTable archiveHash;  /* One entry for each archive.  Key is the name. 
+  Tcl_HashTable archiveHash;  /* One entry for each archive.  Key is the name.
                               ** data is the ZvfsArchive structure */
   int isInit;                 /* True after initialization */
 } local;
@@ -97,8 +97,8 @@ typedef struct ZvfsFile {
   int iOffset;              /* Offset into the ZIP archive of the data */
   int nByte;                /* Uncompressed size of the virtual file */
   int nByteCompr;           /* Compressed size of the virtual file */
-  int isdir;		    /* Set to 1 if directory */
-  int depth; 		    /* Number of slashes in path. */
+  int isdir;                /* Set to 1 if directory */
+  int depth;                /* Number of slashes in path. */
   int timestamp;            /* Modification time */
   struct ZvfsFile *pNext;      /* Next file in the same archive */
   struct ZvfsFile *pNextName;  /* A doubly-linked list of files with the same */
@@ -177,10 +177,10 @@ static char *CanonicalPath(const char *zRoot, const char *zTail){
 #ifdef __WIN32__
   if( isalpha(zTail[0]) && zTail[1]==':' ){ zTail += 2; }
   if( zTail[0]=='\\' ){ zRoot = ""; zTail++; }
-  if( zTail[0]=='\\' ){ zRoot = "/"; zTail++; }	// account for UNC style path
+  if( zTail[0]=='\\' ){ zRoot = "/"; zTail++; }   // account for UNC style path
 #endif
   if( zTail[0]=='/' ){ zRoot = ""; zTail++; }
-  if( zTail[0]=='/' ){ zRoot = "/"; zTail++; }		// account for UNC style path
+  if( zTail[0]=='/' ){ zRoot = "/"; zTail++; }    // account for UNC style path
   zPath = Tcl_Alloc((unsigned int)(strlen(zRoot) + strlen(zTail) + 2));
   if( zPath==0 ) return 0;
   sprintf(zPath, "%s/%s", zRoot, zTail);
@@ -243,15 +243,14 @@ static char *AbsolutePath(const char *z) {
     ** case and (\) into (/) on the copy.
     */
     zResult = Tcl_Alloc((unsigned int)strlen(z) + 1);
-    if( zResult==0 ) return 0;
     strcpy(zResult, z);
 #ifdef __WIN32__
     {
       int i, c;
       for(i=0; (c=zResult[i])!=0; i++){
         if( isupper(c) ) {
-		// zResult[i] = tolower(c);
-	    }
+          // zResult[i] = tolower(c);
+        }
         else if( c=='\\' ) zResult[i] = '/';
       }
     }
@@ -278,7 +277,7 @@ static void ZvfsFreeArchive(ZvfsArchive *pArchive) {
 ** routine has not been previously called.
 */
 int Zvfs_Mount(
-  Tcl_Interp *interp,    /* Leave error messages in this interpreter */
+  Tcl_Interp *interp,          /* Leave error messages in this interpreter */
   const char *zArchive,        /* The ZIP archive file */
   const char *zMountPoint      /* Mount contents at this directory */
 ) {
@@ -361,7 +360,7 @@ int Zvfs_Mount(
   ** then seek to that location.
   */
   {
-    int32_t header_size = INT32(zBuf, 12);    // Size of central directory (bytes) 
+    int32_t header_size = INT32(zBuf, 12);    // Size of central directory (bytes)
     int32_t header_offset = INT32(zBuf, 16);  // Offset of start of central directory, relative to start of archive
     iArchiveOffset = iEOCD - header_size - header_offset;  // Start of archive
     if (iArchiveOffset < 0) {
@@ -386,7 +385,7 @@ int Zvfs_Mount(
     int lenExtra = INT16(zBuf, 30) + INT16(zBuf, 32); /* Length of "extra" data for next file */
     int iData = INT32(zBuf, 42);    /* Offset to start of file data */
 
-    /* If the virtual filename is too big to fit in zName[], then skip 
+    /* If the virtual filename is too big to fit in zName[], then skip
     ** this file
     */
     if (lenName >= sizeof(zName)) {
@@ -591,7 +590,7 @@ static int ZvfsInfoObjCmd(
   ZvfsFile *pFile = ZvfsLookup(zFilename);
   if (pFile) {
     Tcl_Obj *pResult = Tcl_GetObjResult(interp);
-    Tcl_ListObjAppendElement(interp, pResult, 
+    Tcl_ListObjAppendElement(interp, pResult,
        Tcl_NewStringObj(pFile->pArchive->zName, -1));
     Tcl_ListObjAppendElement(interp, pResult, Tcl_NewIntObj(pFile->nByte));
     Tcl_ListObjAppendElement(interp, pResult, Tcl_NewIntObj(pFile->nByteCompr));
@@ -688,7 +687,7 @@ typedef struct ZvfsChannelInfo {
   int64_t startOfData;      /* File position of start of data in ZIP archive */
   Tcl_Channel chan;         /* Open file handle to the archive file */
   unsigned char *zBuf;      /* buffer used by the decompressor */
-  unsigned char *uBuf;	    /* pointer to the uncompressed, unencrypted data */
+  unsigned char *uBuf;      /* pointer to the uncompressed, unencrypted data */
   z_stream stream;          /* state of the decompressor */
   int isEncrypted;          /* file is encrypted */
   int isCompressed;         /* True data is compressed */
@@ -697,7 +696,7 @@ typedef struct ZvfsChannelInfo {
 /*
 ** This routine is called as an exit handler.  If we do not set
 ** ZvfsChannelInfo.chan to NULL, then Tcl_Close() will be called on
-** that channel a second time when Tcl_Exit runs.  This will lead to a 
+** that channel a second time when Tcl_Exit runs.  This will lead to a
 ** core dump.
 */
 static void vfsExit(void *pArg) {
@@ -750,14 +749,14 @@ static int vfsInput(
   ZvfsChannelInfo *pInfo = (ZvfsChannelInfo *)instanceData;
   unsigned long nextpos = pInfo->readSoFar + toRead;
   if (nextpos > pInfo->nByte) {
-	  toRead = pInfo->nByte - pInfo->readSoFar;
-	  nextpos = pInfo->nByte;
+    toRead = pInfo->nByte - pInfo->readSoFar;
+    nextpos = pInfo->nByte;
   }
 
   memcpy(buf, pInfo->uBuf + pInfo->readSoFar, toRead);
   pInfo->readSoFar = nextpos;
   *pErrorCode = 0;
-  
+
   return toRead;
 }
 
@@ -779,7 +778,7 @@ static int vfsRead(
   if (pInfo->isEncrypted) {
     *pErrorCode = EINVAL;
     return -1;
-	}
+  }
 
   if (pInfo->isCompressed) {
     int err = Z_OK;
@@ -905,7 +904,7 @@ static int vfsGetFile(
 }
 
 /*
-** This structure describes the channel type structure for 
+** This structure describes the channel type structure for
 ** access to the ZVFS.
 */
 static Tcl_ChannelType vfsChannelType = {
@@ -1009,7 +1008,7 @@ L_ERROR:
     Tcl_Close(interp, chan);
   }
   if (pInfo) {
-    pInfo->chan = NULL;   // pInfo->chan was closed 
+    pInfo->chan = NULL;   // pInfo->chan was closed
     ZvfsFreeChannelInfo(pInfo);
   }
   return NULL;
@@ -1048,7 +1047,7 @@ static int ZvfsFileAccess(char *path, int mode) {
   if (!pFile) {
     return -1;
   }
-  return 0; 
+  return 0;
 }
 
 Tcl_Channel Tobe_FSOpenFileChannelProc _ANSI_ARGS_((
@@ -1078,10 +1077,10 @@ int Tobe_FSAccessProc _ANSI_ARGS_((Tcl_Obj *pathPtr, int mode)) {
 
 
 /* Tcl_Obj* Tobe_FSFilesystemSeparatorProc
-                            _ANSI_ARGS_((Tcl_Obj *pathPtr)) { 
+                            _ANSI_ARGS_((Tcl_Obj *pathPtr)) {
   return Tcl_NewStringObj("/",-1);;
 } */
-/* Function to process a 
+/* Function to process a
 * 'Tobe_FSMatchInDirectory()'.  If not
 * implemented, then glob and recursive
 * copy functionality will be lacking in
@@ -1142,7 +1141,7 @@ int Tobe_FSMatchInDirectoryProc _ANSI_ARGS_((
   return TCL_OK;
 }
 
-/* Function to check whether a path is in 
+/* Function to check whether a path is in
 * this filesystem.  This is the most
 * important filesystem procedure. */
 int Tobe_FSPathInFilesystemProc _ANSI_ARGS_((
@@ -1303,13 +1302,13 @@ ClientData Tobe_FSCreateInternalRepProc _ANSI_ARGS_((Tcl_Obj *pathPtr)) {
 
 
 static Tcl_Filesystem Tobe_Filesystem = {
-    "zvfs",		     /* The name of the filesystem. */
-    sizeof(Tcl_Filesystem),  /* Length of this structure, so future
+    "zvfs",                 /* The name of the filesystem. */
+    sizeof(Tcl_Filesystem), /* Length of this structure, so future
                              * binary compatibility can be assured. */
     TCL_FILESYSTEM_VERSION_1,
                             /* Version of the filesystem type. */
     Tobe_FSPathInFilesystemProc,
-                            /* Function to check whether a path is in 
+                            /* Function to check whether a path is in
                              * this filesystem.  This is the most
                              * important filesystem procedure. */
     Tobe_FSDupInternalRepProc,
@@ -1327,127 +1326,127 @@ static Tcl_Filesystem Tobe_Filesystem = {
     Tobe_FSCreateInternalRepProc,
                             /* Function to create a filesystem-specific
                              * internal representation.  May be NULL
-                             * if paths have no internal representation, 
+                             * if paths have no internal representation,
                              * or if the Tobe_FSPathInFilesystemProc
-                             * for this filesystem always immediately 
-                             * creates an internal representation for 
+                             * for this filesystem always immediately
+                             * creates an internal representation for
                              * paths it accepts. */
     Tobe_FSNormalizePathProc,
                             /* Function to normalize a path.  Should
                              * be implemented for all filesystems
-                             * which can have multiple string 
-                             * representations for the same path 
+                             * which can have multiple string
+                             * representations for the same path
                              * object. */
     Tobe_FSFilesystemPathTypeProc,
-                            /* Function to determine the type of a 
+                            /* Function to determine the type of a
                              * path in this filesystem.  May be NULL. */
     Tobe_FSFilesystemSeparatorProc,
-                            /* Function to return the separator 
+                            /* Function to return the separator
                              * character(s) for this filesystem.  Must
                              * be implemented. */
     Tobe_FSStatProc,
-                            /* 
+                            /*
                              * Function to process a 'Tobe_FSStat()'
                              * call.  Must be implemented for any
                              * reasonable filesystem.
                              */
     Tobe_FSAccessProc,
-                            /* 
+                            /*
                              * Function to process a 'Tobe_FSAccess()'
                              * call.  Must be implemented for any
                              * reasonable filesystem.
                              */
     Tobe_FSOpenFileChannelProc,
-                            /* 
+                            /*
                              * Function to process a
                              * 'Tobe_FSOpenFileChannel()' call.  Must be
                              * implemented for any reasonable
                              * filesystem.
                              */
     Tobe_FSMatchInDirectoryProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSMatchInDirectory()'.  If not
                              * implemented, then glob and recursive
                              * copy functionality will be lacking in
                              * the filesystem. */
     Tobe_FSUtimeProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSUtime()' call.  Required to
-                             * allow setting (not reading) of times 
+                             * allow setting (not reading) of times
                              * with 'file mtime', 'file atime' and
                              * the open-r/open-w/fcopy implementation
                              * of 'file copy'. */
     Tobe_FSLinkProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSLink()' call.  Should be
                              * implemented only if the filesystem supports
                              * links. */
     Tobe_FSListVolumesProc,
-                            /* Function to list any filesystem volumes 
+                            /* Function to list any filesystem volumes
                              * added by this filesystem.  Should be
                              * implemented only if the filesystem adds
                              * volumes at the head of the filesystem. */
     Tobe_FSFileAttrStringsProc,
-                            /* Function to list all attributes strings 
-                             * which are valid for this filesystem.  
+                            /* Function to list all attributes strings
+                             * which are valid for this filesystem.
                              * If not implemented the filesystem will
                              * not support the 'file attributes' command.
                              * This allows arbitrary additional information
                              * to be attached to files in the filesystem. */
     Tobe_FSFileAttrsGetProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSFileAttrsGet()' call, used by
                              * 'file attributes'. */
     Tobe_FSFileAttrsSetProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSFileAttrsSet()' call, used by
                              * 'file attributes'.  */
     Tobe_FSCreateDirectoryProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSCreateDirectory()' call. Should
                              * be implemented unless the FS is
                              * read-only. */
     Tobe_FSRemoveDirectoryProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSRemoveDirectory()' call. Should
                              * be implemented unless the FS is
                              * read-only. */
     Tobe_FSDeleteFileProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSDeleteFile()' call.  Should
                              * be implemented unless the FS is
                              * read-only. */
     Tobe_FSCopyFileProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSCopyFile()' call.  If not
                              * implemented Tcl will fall back
                              * on open-r, open-w and fcopy as
                              * a copying mechanism. */
     Tobe_FSRenameFileProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSRenameFile()' call.  If not
                              * implemented, Tcl will fall back on
                              * a copy and delete mechanism. */
     Tobe_FSCopyDirectoryProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSCopyDirectory()' call.  If
                              * not implemented, Tcl will fall back
                              * on a recursive create-dir, file copy
                              * mechanism. */
     Tobe_FSLoadFileProc,
-                            /* Function to process a 
+                            /* Function to process a
                              * 'Tobe_FSLoadFile()' call.  If not
                              * implemented, Tcl will fall back on
-                             * a copy to native-temp followed by a 
+                             * a copy to native-temp followed by a
                              * Tobe_FSLoadFile on that temporary copy. */
     Tobe_FSUnloadFileProc,
-                            /* Function to unload a previously 
+                            /* Function to unload a previously
                              * successfully loaded file.  If load was
                              * implemented, then this should also be
                              * implemented, if there is any cleanup
                              * action required. */
     Tobe_FSGetCwdProc,
-                            /* 
+                            /*
                              * Function to process a 'Tobe_FSGetCwd()'
                              * call.  Most filesystems need not
                              * implement this.  It will usually only be
@@ -1455,7 +1454,7 @@ static Tcl_Filesystem Tobe_Filesystem = {
                              * before 'chdir'.  May be NULL.
                              */
     Tobe_FSChdirProc,
-                            /* 
+                            /*
                              * Function to process a 'Tobe_FSChdir()'
                              * call.  If filesystems do not implement
                              * this, it will be emulated by a series of
