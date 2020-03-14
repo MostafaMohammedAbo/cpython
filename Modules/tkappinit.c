@@ -25,40 +25,16 @@ static int tk_load_failed;
 #endif
 
 // mods
-#define ZVFS_MOUNT "/zvfs"
-#define ZVFS_TCL_DIR ZVFS_MOUNT "/tcl8.6"
-#define ZVFS_TK_DIR ZVFS_MOUNT "/tk8.6"
+#define ZVFS_MOUNT "/@tclzvfs"
+#define ZVFS_TCL_DIR ZVFS_MOUNT "/tcl" TCL_VERSION
+#define ZVFS_TK_DIR ZVFS_MOUNT "/tk" TCL_VERSION
 
 static int setup_zvfs(Tcl_Interp *interp) {
-    // check zip signatrue
-    // FIXME: support zip file with comment
-    // END_CENTRAL_DIR_SIZE = 22
-    // STRING_END_ARCHIVE = b'PK\x05\x06'
-
-    // open self
-    // NOTE: // Tcl_FindExecutable was called in PyInit__tkinter
-    const char *prog_name = Tcl_GetNameOfExecutable();
-    assert(prog_name != NULL);
-    FILE *fp = fopen(prog_name, "rb");
-    if (!fp) {
+    extern wchar_t *_Py_GetStandaloneExecutable();
+    wchar_t *sa_exe = _Py_GetStandaloneExecutable();
+    if (!sa_exe) {
         return 0;
     }
-
-    // seek and read sig
-    int rc = fseek(fp, -22, SEEK_END);
-    if (rc != 0) {
-        (void)fclose(fp);
-        return 0;
-    }
-    char buf[4] = {0, 0, 0, 0};
-    (void)fread(buf, 4, 1, fp);
-    (void)fclose(fp);
-
-    char sig[4] = {'P', 'K', 0x05, 0x06};
-    if (memcmp(buf, sig, 4) != 0) {
-        return 0;
-    }
-    // found zip sig
 
     extern int Zvfs_Init(Tcl_Interp *);
     extern int Zvfs_Mount(Tcl_Interp *, const char *, const char *);

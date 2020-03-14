@@ -1130,6 +1130,9 @@
     <ClCompile Include="..\Modules\_xxsubinterpretersmodule.c" />
     <ClCompile Include="..\Python\context.c" />
     <ClCompile Include="..\Python\hamt.c" />
+    <ClCompile Include="..\Modules\standalone.c">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc">
