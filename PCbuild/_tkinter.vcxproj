@@ -83,6 +83,10 @@
   </PropertyGroup>
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+  <PropertyGroup>
+    <IncludeExternals Condition="$(IncludeExternals) == '' and Exists('$(zlibDir)\zlib.h')">true</IncludeExternals>
+    <IncludeExternals Condition="$(IncludeExternals) == ''">false</IncludeExternals>
+  </PropertyGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="tcltk.props" />
@@ -104,6 +108,10 @@
   <ItemGroup>
     <ClCompile Include="..\Modules\_tkinter.c" />
     <ClCompile Include="..\Modules\tkappinit.c" />
+    <ClCompile Include="..\Modules\tclzvfs\zvfs.c">
+      <AdditionalIncludeDirectories Condition="$(IncludeExternals)">$(zlibDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc" />

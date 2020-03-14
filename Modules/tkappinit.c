@@ -12,6 +12,7 @@
    it explicitly, e.g. tkapp.eval("load {} Blt").
  */
 
+#include <assert.h>
 #include <string.h>
 #include <tcl.h>
 #include <tk.h>
@@ -23,9 +24,55 @@
 static int tk_load_failed;
 #endif
 
+// mods
+#define ZVFS_MOUNT "/zvfs"
+#define ZVFS_TCL_DIR ZVFS_MOUNT "/tcl8.6"
+#define ZVFS_TK_DIR ZVFS_MOUNT "/tk8.6"
+
+static int setup_zvfs(Tcl_Interp *interp) {
+    // check zip signatrue
+    // FIXME: support zip file with comment
+    // END_CENTRAL_DIR_SIZE = 22
+    // STRING_END_ARCHIVE = b'PK\x05\x06'
+
+    // open self
+    // NOTE: // Tcl_FindExecutable was called in PyInit__tkinter
+    const char *prog_name = Tcl_GetNameOfExecutable();
+    assert(prog_name != NULL);
+    FILE *fp = fopen(prog_name, "rb");
+    if (!fp) {
+        return 0;
+    }
+
+    // seek and read sig
+    int rc = fseek(fp, -22, SEEK_END);
+    if (rc != 0) {
+        (void)fclose(fp);
+        return 0;
+    }
+    char buf[4] = {0, 0, 0, 0};
+    (void)fread(buf, 4, 1, fp);
+    (void)fclose(fp);
+
+    char sig[4] = {'P', 'K', 0x05, 0x06};
+    if (memcmp(buf, sig, 4) != 0) {
+        return 0;
+    }
+    // found zip sig
+
+    extern int Zvfs_Init(Tcl_Interp *);
+    extern int Zvfs_Mount(Tcl_Interp *, const char *, const char *);
+    Zvfs_Init(interp);
+    Zvfs_Mount(interp, Tcl_GetNameOfExecutable(), ZVFS_MOUNT);
+    Tcl_SetVar2(interp, "env", "TCL_LIBRARY", ZVFS_TCL_DIR, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "tcl_library", ZVFS_TCL_DIR, TCL_GLOBAL_ONLY);
+    return 1;
+}
+
 int
 Tcl_AppInit(Tcl_Interp *interp)
 {
+    int zvfs_mounted = 0;
     const char *_tkinter_skip_tk_init;
 #ifdef TKINTER_PROTECT_LOADTK
     const char *_tkinter_tk_failed;
@@ -54,6 +101,8 @@ Tcl_AppInit(Tcl_Interp *interp)
         Tcl_SetVar(interp, "tcl_pkgPath", tclLibPath, TCL_GLOBAL_ONLY);
     }
 #endif
+    // mods
+    zvfs_mounted = setup_zvfs(interp);
     if (Tcl_Init (interp) == TCL_ERROR)
         return TCL_ERROR;
 
@@ -102,6 +151,11 @@ Tcl_AppInit(Tcl_Interp *interp)
     }
 #endif
 
+    // mods
+    if (zvfs_mounted) {
+        Tcl_SetVar2(interp, "env", "TK_LIBRARY", ZVFS_TK_DIR, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "tk_library", ZVFS_TK_DIR, TCL_GLOBAL_ONLY);
+    }
     if (Tk_Init(interp) == TCL_ERROR) {
 #ifdef TKINTER_PROTECT_LOADTK
         tk_load_failed = 1;

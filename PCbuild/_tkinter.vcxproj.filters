@@ -12,5 +12,8 @@
     <ClCompile Include="..\Modules\tkappinit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Modules\tclzvfs\zvfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
