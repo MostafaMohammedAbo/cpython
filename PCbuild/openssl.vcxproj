@@ -67,7 +67,7 @@
 set VCINSTALLDIR=$(VCInstallDir)
 if not exist "$(IntDir.TrimEnd('\'))" mkdir "$(IntDir.TrimEnd('\'))"
 cd /D "$(IntDir.TrimEnd('\'))"
-$(Perl) "$(opensslDir)\configure" $(OpenSSLPlatform) no-unit-test
+$(Perl) "$(opensslDir)\configure" $(OpenSSLPlatform) no-unit-test no-tests no-ui-console
 nmake
 </NMakeBuildCommandLine>
   </PropertyGroup>
@@ -99,8 +99,8 @@ nmake
   <Target Name="_CopyToOutput" AfterTargets="Build">
     <ItemGroup>
       <_Built Include="$(opensslDir)\LICENSE" />
-      <_Built Include="$(IntDir)\libcrypto*.lib;$(IntDir)\libcrypto-*.dll;$(IntDir)\libcrypto-*.pdb" />
-      <_Built Include="$(IntDir)\libssl*.lib;$(IntDir)\libssl-*.dll;$(IntDir)\libssl-*.pdb" />
+      <_Built Include="$(IntDir)\libcrypto_static.lib" />
+      <_Built Include="$(IntDir)\libssl_static.lib" />
       <_AppLink Include="$(opensslDir)\ms\applink.c" />
       <_Include Include="$(opensslDir)\Include\openssl\*.h" />
       <_Include Include="$(IntDir)\include\openssl\*.h" />

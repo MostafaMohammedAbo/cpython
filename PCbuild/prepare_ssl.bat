@@ -39,8 +39,8 @@ goto Usage
 call "%PCBUILD%\find_msbuild.bat" %MSBUILD%
 if ERRORLEVEL 1 (echo Cannot locate MSBuild.exe on PATH or as MSBUILD variable & exit /b 2)
 
-call "%PCBUILD%\find_python.bat" "%PYTHON%"
-if ERRORLEVEL 1 (echo Cannot locate python.exe on PATH or as PYTHON variable & exit /b 3)
+:: call "%PCBUILD%\find_python.bat" "%PYTHON%"
+:: if ERRORLEVEL 1 (echo Cannot locate python.exe on PATH or as PYTHON variable & exit /b 3)
 
 call "%PCBUILD%\get_externals.bat" --openssl-src --no-openssl %ORG_SETTING%
 
